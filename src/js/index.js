@@ -1,8 +1,8 @@
-import App from './App.svelte';
+import App from "./App.svelte";
 
 const app = new App({
-    target: document.getElementById('root'),
+    target: document.getElementById("root"),
     props: {
-        title: 'Hello World!'
+        title: "Hello World!"
     }
 });
