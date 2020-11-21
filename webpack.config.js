@@ -4,11 +4,12 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 module.exports = env => {
-    const mode = env.mode;
+    const isDev = env.development ? true : false;
     return {
         entry: "./src/js/index.js",
         output: {
-            filename: "js/main.js"
+            filename: "js/main.js",
+            path: path.resolve(process.cwd(), 'dist')
         },
         resolve: {
             alias: {
@@ -17,8 +18,8 @@ module.exports = env => {
             extensions: [".mjs", ".js", ".svelte"],
             mainFields: ["svelte", "browser", "module", "main"]
         },
-        mode,
-        devtool: "none",
+        mode: isDev ? 'development' : 'production',
+        devtool: isDev ? 'cheap-module-source-map' : false,
         module: {
             rules: [
                 {
@@ -29,6 +30,9 @@ module.exports = env => {
                     ],
                     use: {
                         loader: "babel-loader"
+                    },
+                    resolve: {
+                        fullySpecified: false
                     }
                 },
                 {
@@ -38,7 +42,7 @@ module.exports = env => {
                         {
                             loader: "svelte-loader",
                             options: {
-                                emitCss: true
+                                preprocess: require('svelte-preprocess')({})
                             }
                         }
                     ]
@@ -46,12 +50,12 @@ module.exports = env => {
                 {
                     test: /\.css$/,
                     use: [
-                        {
-                            loader: MiniCssExtractPlugin.loader,
-                            options: {
-                                publicPath: "../"
-                            }
-                        },
+                        isDev ? 'style-loader' : {
+							loader: MiniCssExtractPlugin.loader,
+							options: {
+								publicPath: '../'
+							},
+						},
                         "css-loader"
                     ]
                 }
